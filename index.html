@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Calcul de facture de reprographie</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+      /* Styles CSS personnalisés */
+      .download-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .download-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
+    <script>
+      function calculerFacture() {
+        var nombrePhotocopies = parseInt(document.getElementById('photocopiesInput').value);
+        var facture = 0;
+        
+        if (nombrePhotocopies >= 0) {
+          if (nombrePhotocopies <= 10) {
+            facture = nombrePhotocopies * 0.10;
+          } else if (nombrePhotocopies <= 30) {
+            facture = 10 * 0.10 + (nombrePhotocopies - 10) * 0.09;
+          } else {
+            facture = 10 * 0.10 + 20 * 0.09 + (nombrePhotocopies - 30) * 0.08;
+          }
+          
+          document.getElementById('resultat').innerHTML = "La facture est de : " + facture.toFixed(2) + " €";
+          
+          // Générer la facture en PDF
+          var element = document.getElementById('factureContent');
+          element.style.display = "block";
+          document.getElementById('nombrePhotocopies').innerText = nombrePhotocopies;
+          document.getElementById('montantFacture').innerText = facture.toFixed(2);
+          var opt = {
+            margin: 0.5,
+            filename: 'facture.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+          };
+          html2pdf().from(element).set(opt).save();
+        } else {
+          document.getElementById('resultat').innerHTML = "Veuillez saisir un nombre valide de photocopies.";
+          document.getElementById('factureContent').style.display = "none"; // Masquer la section de facture en cas d'erreur
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h1 class="text-center mb-4">De combien de photocopie avez-vous besoin ?</h1>
+      <div class="row justify-content-center">
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="photocopiesInput">Nombre de photocopies :</label>
+            <input type="number" id="photocopiesInput" class="form-control">
+          </div>
+          <button onclick="calculerFacture()" class="btn btn-primary">Calculer</button>
+          <div id="resultat" class="mt-4"></div>
+          <div id="factureContent" style="display: none;">
+            <hr>
+            <h3 class="text-center">Facture</h3>
+            <p><strong>Nombre de photocopies :</strong> <span id="nombrePhotocopies"></span></p>
+            <p><strong>Montant de la facture :</strong> <span id="montantFacture"></span> €</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  </body>
+</html>
+
+
